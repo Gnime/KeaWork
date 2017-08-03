@@ -1,0 +1,112 @@
+﻿@model DevexamMichaelMielnicki.Models.UserViewModel
+    
+    
+   
+   
+    
+@{
+    ViewBag.Title = "UserDashboardView";
+  //  <img src="@Model.User.Img" alt="Logo" class="img-thumbnail" height="150" width="150" >
+
+    List<SelectListItem> listItems = new List<SelectListItem>();
+    listItems.Add(new SelectListItem
+    {
+        Text = "Beginner",
+        Value = "1"
+    });
+    listItems.Add(new SelectListItem
+    {
+        Text = "Intermediate",
+        Value = "2",
+
+    });
+    listItems.Add(new SelectListItem
+    {
+        Text = "Average",
+        Value = "3"
+    });
+    listItems.Add(new SelectListItem
+    {
+        Text = "Grand Master",
+        Value = "4"
+    });
+
+}
+
+<h2>User Dashboard</h2>
+@if (Model.User.Admin)
+{
+
+    <p>@Html.ActionLink("Click here for the Admin page", "AdminDashboardView", "Home", new { @class = "btn btn-default" })</p>
+
+}
+
+
+
+
+<h2>Select a Skill and set your level.</h2>
+@using (Html.BeginForm("UserDashBoardView", "Home", FormMethod.Post, new { @class = "form-horisontal", role = "form" }))
+{ @Html.AntiForgeryToken() 
+     @Html.DropDownListFor(m => m.SelectedSkill, new SelectList(Model.Skills, "Value", "Text"))
+
+   
+
+        @Html.DropDownListFor(model => model.MasterLevel, listItems, "-- Select Status --")
+            <input type="submit" class="btn btn-default" value="Save Skill">
+        }
+<h2>Skills you know and love</h2>
+<div id="selected skills">@foreach (var experience in Model.User.Experience)
+{
+    <div>@experience.Skills.SkillName -------- @experience.Experiencename</div>
+
+}</div>
+<h2>Select the skills you want to focus on.</h2>
+
+
+    @foreach (var skill in Model.Company.Skills)
+    {
+        <div  class= "SkillForFocus"> @skill.SkillName </div>
+        <div>@Ajax.ActionLink("Choose Focus", "SetFocus" , "Home" , 
+        new { id = skill.SkillId} , 
+        new AjaxOptions { UpdateTargetId = "CurrentFocus", InsertionMode = InsertionMode.Replace   } ,
+        new { @class = "btn btn-default" })</div>
+    }
+    <div id="CurrentFocus"> @foreach (var focus in Model.User.Focus)
+    {
+       <div>@focus.Skill.SkillName</div>
+    }</div>
+        
+
+@*@section Scripts { 
+    <script>
+        var aFocus = [];
+        $(document).on("click", "input[type=checkbox]", function () {
+            var checkbox = $(this).attr("data-id");
+            if ($(this).is(":checked")) {
+                aFocus.push(checkbox);
+            }
+            else {
+                for (var i = 0; i < aFocus.length; i++) {
+                    if (checkbox == aFocus[i]) {
+                        aFocus.splice(i, 1);
+                    }
+
+                }
+            }
+            console.log(aFocus);
+        })
+        $("#setFocus").click(function () {
+            if (aFocus.length > 3) {
+                $("#error-msg").text("You can only select 3 Foci!")
+            } else {
+                $.ajax({
+                    "url": "/Home/SetFocus",
+                    "method":"POST",
+                    "datatype": "JSON",
+                    "data": { "arrayOfSkills": aFocus },                    
+                    "cache": false ,
+                    "traditional": true
+                }).done(function (jdata) { })
+            }
+        })
+    </script> }*@

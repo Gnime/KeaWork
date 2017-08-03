@@ -1,0 +1,70 @@
+﻿@model DevexamMichaelMielnicki.Models.AdminViewModel
+@{
+    ViewBag.Title = "AdminDashboardView";
+}
+
+<h2>Welcome @Model.Company.Name</h2>  
+<img src="@Model.Company.Img" alt="logo" class="img-thumbnail" width="150" height="150">
+@using (Html.BeginForm("AdminDashboardView", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+   
+    
+     <div class="form-group">
+        @Html.LabelFor(m => m.Skill.SkillName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Skill.SkillName, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-success" value="Add this skill." />
+            
+        </div>
+
+    </div>
+    <h2>Reference Code</h2>
+    <div> @Model.Company.ReferenceCode </div>
+    <h2>Company Skills</h2>
+   foreach (var skill in Model.Company.Skills)
+   {
+    <div> @skill.SkillName </div>
+   }
+
+    <h2>Company Employees</h2>
+  <div id="employees">@foreach (var employee in Model.Company.Employees)
+  {
+        <div>@employee.UserName </div>
+        foreach (var focus in employee.Focus)
+        {
+
+            <div>@focus.Skill.SkillName</div>
+
+        }
+        foreach (var experience in employee.Experience)
+        {
+            <div>@experience.Skills.SkillName --------- @experience.Experiencename</div>
+        }
+  }
+
+
+      </div>
+}
+
+@section Scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.1.min.js"></script>
+    <script src="~/SignalR/hubs"></script>
+    <script>
+        var myHub = $.connection.myHub;
+        myHub.client.newEmployee = function (Employee) {
+
+            $("#employees").append("<div>"+Employee+"</div>")
+        }
+        $.connection.hub.start().done(function () {
+            
+            });
+    </script>
+    
+    }
+
+
